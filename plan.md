@@ -10,6 +10,8 @@ I need the following features:
 
 ## Varibles
 
+When refrencing varibles there will be no undeclared. `undifined` will be returned instead of erroring
+
 ## Operators
 
 This will be the same as Javascript. `+` for plus, `&&` for and, etc
@@ -40,5 +42,5 @@ propose {
 
 Have some sort of a print function. The syntax will be:
 ```text
-message("Some str");
+sendMessage("Some str");
 ```
