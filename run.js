@@ -25,6 +25,24 @@ function runEsoLang(code) {
 
                 console.log(varibles[varName]);
             }
+        } else if (currentLine.startsWith("propose")) {
+            const varName = currentLine.substring(8, currentLine.indexOf("=")).trim();
+            const varVal = currentLine.substring(currentLine.indexOf("=") + 1).trim();
+            
+            if (varVal.toLowerCase() == "true") {
+                varibles[varName] = true;
+                continue;
+            } else if (varVal.toLowerCase() == "false") {
+                varibles[varName] = false;
+                continue;
+            }
+
+            if (Number(varVal) !== NaN) {
+                varibles[varName] = Number(varVal);
+                continue;
+            }
+
+            varibles[varName] = varVal;
         }
     }
 }
