@@ -20,8 +20,8 @@ Format will be:
 
 ```text
 ysws nameHERE(args...) {
-    CODE
-}
+    CODE;
+};
 ```
 
 ## Error handleing
@@ -30,8 +30,15 @@ It will be a try catch block
 
 ```text
 propose {
-    CODE
+    CODE;
 } proposalRejected (e) {
-    CODE
+    CODE;
 }
+```
+
+## Logging
+
+Have some sort of a print function. The syntax will be:
+```text
+message("Some str");
 ```
