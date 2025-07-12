@@ -10,7 +10,18 @@ I need the following features:
 
 ## Varibles
 
-When refrencing varibles there will be no undeclared. `undifined` will be returned instead of erroring
+When refrencing varibles there will be no undeclared. `undifined` will be returned instead of erroring.
+
+The only data types that can be used are:
+- Numbers
+- Booleans
+- Strings
+
+The format to declare and use them are
+
+```text
+propose varName = "some val"
+```
 
 ## Operators
 
