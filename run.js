@@ -3,6 +3,7 @@ function runEsoLang(code) {
 
     const keyWords = ["sendMessage", "propose", "ysws", "proposal", "proposalRejected"];
     const varibles = {};
+    const functions = {};
 
     for (let i = 0; i < lines.length; i++) {
         const currentLine = lines[i].trim();
@@ -60,6 +61,15 @@ function runEsoLang(code) {
             }
 
             varibles[varName] = varibles[varVal];
+        } else if (currentLine.startsWith("ysws")) {
+            const funcName = currentLine.substring(4, currentLine.indexOf("(")).trim();
+            const args = currentLine.substring(currentLine.indexOf("(") + 1, currentLine.indexOf(")")).trim().split(",");
+            
+            for (let i = 0; i < args.length; i++) {
+                args[i] = i.trim();
+            }
+
+            
         }
     }
 }

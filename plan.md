@@ -32,9 +32,7 @@ This will be the same as Javascript. `+` for plus, `&&` for and, etc
 Format will be:
 
 ```text
-ysws nameHERE(args...) {
-    CODE;
-};
+ysws nameHERE(args...) CODE
 ```
 
 ## Error handleing
