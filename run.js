@@ -69,7 +69,29 @@ function runEsoLang(code) {
                 args[i] = i.trim();
             }
 
-            
+            const code = [];
+
+            for (let j = 1; j >= 0; j++) {
+                const codeLine = lines[i + j].trim();
+
+                if (codeLine.endsWith("}")) {
+                    i = i + j;
+                    break;
+                }
+
+                code.push(codeLine);
+            }
+
+            functions[funcName] = [args, code];
+        } else if (currentLine.startsWith("proposal")) {
+            const code = currentLine.substring(10, currentLine.indexOf(","));
+            const catchCode = currentLine.substring(currentLine.indexOf(",") + 1, currentLine.length - 1);
+
+            try {
+                // run the code
+            } catch (e) {
+                // run the catchCode
+            }
         }
     }
 }
