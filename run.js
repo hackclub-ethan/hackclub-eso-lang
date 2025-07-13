@@ -1,7 +1,7 @@
 function runEsoLang(code) {
     const lines = code.split("\n");
 
-    const keyWords = ["sendMessage", "propose", "ysws", "proposal"];
+    const keyWords = ["sendMessage", "propose", "ysws", "proposal", "true", "false"];
     const varibles = {};
     const functions = {};
     let mostRecentFuncReturn;
@@ -24,13 +24,30 @@ function runEsoLang(code) {
                 return [false, "something"];
             }
         } else {
-            // Logic for if the message is from a varible.
-            try {
-                const varName = currentLine.slice(13, currentLine.length - 1);
+            // This line checks for if there are atleast 2 `(`
+            if ((currentLine.match(/\(/g) || []).length >= 2) {
+                // Logic for if the message is from a function
+                try {
+                    const funcName = currentLine.slice(13, currentLine.length - 1);
 
-                console.log(varibles[varName]);
-            } catch (e) {
-                return [false, "something"];
+                    if (!Object.keys(functions).includes(funcName)) {
+                        return [false, "unknown function"];
+                    }
+
+                    runFunc(currentLine);
+                    console.log(mostRecentFuncReturn);
+                } catch (e) {
+                    return [false, "something"];
+                }
+            } else {
+                // Logic for if the message is from a varible
+                try {
+                    const varName = currentLine.slice(13, currentLine.length - 1);
+
+                    console.log(varibles[varName]);
+                } catch (e) {
+                    return [false, "something"];
+                }
             }
         }
         return true;
@@ -64,6 +81,16 @@ function runEsoLang(code) {
             if (Number(varVal) !== NaN) {
                 varibles[varName] = Number(varVal);
                 return true;
+            }
+
+            if (varVal.includes("(")) {
+                switch (runFunc(currentLine)) {
+                    case [false, "unknown"]:
+                        return [false, "unknown"];
+                    case [false, "numArgs"]:
+                        return [false, "numArgs"];
+                }
+                varVal = mostRecentFuncReturn;
             }
 
             if (varVal.startsWith('"') && varVal.endsWith('"')) {
@@ -214,6 +241,9 @@ function runEsoLang(code) {
                 case [false, "something"]:
                     console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     break mainLoop;
+                case [false, "unknown function"]:
+                    console.error(`ERROR ON LINE ${i + 1} | Function with that name not found`);
+                    break mainLoop;
             }
         } else if (currentLine.startsWith("propose")) {
             switch (propose(currentLine)) {
@@ -222,6 +252,9 @@ function runEsoLang(code) {
                     break mainLoop;
                 case [false, "something"]:
                     console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
+                    break mainLoop;
+                case [false, "unknown function"]:
+                    console.error(`ERROR ON LINE ${i + 1} | Function with that name not found`);
                     break mainLoop;
             }
         } else if (currentLine.startsWith("ysws")) {
