@@ -1,46 +1,56 @@
 function runEsoLang(code) {
     const lines = code.split("\n");
 
-    const keyWords = ["sendMessage", "propose", "ysws", "proposal", "proposalRejected"];
+    const keyWords = ["sendMessage", "propose", "ysws", "proposal"];
     const varibles = {};
     const functions = {};
 
-    for (let i = 0; i < lines.length; i++) {
-        const currentLine = lines[i].trim();
+    // Func used to print stuff
+    function sendMessage(currentLine) {
+        const isMessageStr = currentLine.indexOf('"') === -1 ? false : true;
 
-        // print function
-        if (currentLine.startsWith("sendMessage(")) {
-            const isMessageStr = currentLine.indexOf('"') === -1 ? false : true;
-
-            // Logic for if the message is a string (instead of var)
-            if (isMessageStr) {
+        // Logic for if the message is a string (instead of var)
+        if (isMessageStr) {
+            try {
                 const message = currentLine.substring(14, currentLine.lastIndexOf('"'));
 
                 if (!currentLine.slice(-1) === ")") {
-                    // error for no closing `)`
+                    return [false, ")"];
                 }
 
                 console.log(message)
-            } else {
-                // Logic for if the message is from a varible.
+            } catch (e) {
+                return [false, "something"];
+            }
+        } else {
+            // Logic for if the message is from a varible.
+            try {
                 const varName = currentLine.slice(13, currentLine.length - 1);
 
                 console.log(varibles[varName]);
+            } catch (e) {
+                return [false, "something"];
             }
-        } else if (currentLine.startsWith("propose")) {
+        }
+        return true;
+    }
+
+    // Func used to declare varibles
+    function propose(currentLine) {
+        try {
             const varName = currentLine.substring(8, currentLine.indexOf("=")).trim();
             let varVal = currentLine.substring(currentLine.indexOf("=") + 1).trim();
 
             if (keyWords.includes(varName)) {
-                // Error for using reserved keywords for var names
+                return [false, "reserve"];
             }
             
             if (varVal.toLowerCase() == "true") {
                 varibles[varName] = true;
-                continue;
+                return true;
             } else if (varVal.toLowerCase() == "false") {
                 varibles[varName] = false;
-                continue;
+                return true;
             }
     
             try {
@@ -52,17 +62,30 @@ function runEsoLang(code) {
 
             if (Number(varVal) !== NaN) {
                 varibles[varName] = Number(varVal);
-                continue;
+                return true;
             }
 
             if (varVal.startsWith('"') && varVal.endsWith('"')) {
                 varibles[varName] = varVal;
-                continue;
+                return true;
             }
 
             varibles[varName] = varibles[varVal];
-        } else if (currentLine.startsWith("ysws")) {
+        } catch (e) {
+            return [false, "something"];
+        }
+        return true;
+    }
+
+    // Function declaration
+    function ysws(currentLine, i) {
+        try {
             const funcName = currentLine.substring(4, currentLine.indexOf("(")).trim();
+
+            if (keyWords.includes(funcName)) {
+                return [false, "reserve"];
+            }
+
             const args = currentLine.substring(currentLine.indexOf("(") + 1, currentLine.indexOf(")")).trim().split(",");
             
             for (let i = 0; i < args.length; i++) {
@@ -83,14 +106,59 @@ function runEsoLang(code) {
             }
 
             functions[funcName] = [args, code];
-        } else if (currentLine.startsWith("proposal")) {
-            const code = currentLine.substring(10, currentLine.indexOf(","));
-            const catchCode = currentLine.substring(currentLine.indexOf(",") + 1, currentLine.length - 1);
+        } catch (e) {
+            return [false, "something"];
+        }
+        return true;
+    }
 
-            try {
-                // run the code
-            } catch (e) {
-                // run the catchCode
+    // Error handeling
+    function proposal(currentLine) {
+        const code = currentLine.substring(10, currentLine.indexOf(","));
+        const catchCode = currentLine.substring(currentLine.indexOf(",") + 1, currentLine.length - 1);
+
+        try {
+            // run the code
+        } catch (e) {
+            // run the catchCode
+        }
+    }
+
+    mainLoop: for (var i = 0; i < lines.length; i++) {
+        const currentLine = lines[i].trim();
+
+        // print function
+        if (currentLine.startsWith("sendMessage(")) {
+            switch (sendMessage(currentLine)) {
+                case [false, ")"]:
+                    console.error(`ERROR ON LINE ${i + 1} | No closing ")"`);
+                    break mainLoop;
+                case [false, "something"]:
+                    console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
+                    break mainLoop;
+            }
+        } else if (currentLine.startsWith("propose")) {
+            switch (propose(currentLine)) {
+                case [false, "reserve"]:
+                    console.error(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
+                    break mainLoop;
+                case [false, "something"]:
+                    console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
+                    break mainLoop;
+            }
+        } else if (currentLine.startsWith("ysws")) {
+            switch (ysws(currentLine, i)) {
+                case [false, "reserve"]:
+                    console.error(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
+                    break mainLoop;
+                case [false, "something"]:
+                    console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
+                    break mainLoop;
+            }
+        } else if (currentLine.startsWith("proposal")) {
+            switch (proposal(currentLine)) {
+                case false:
+                    break mainLoop;
             }
         }
     }
