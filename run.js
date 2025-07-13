@@ -4,6 +4,7 @@ function runEsoLang(code) {
     const keyWords = ["sendMessage", "propose", "ysws", "proposal"];
     const varibles = {};
     const functions = {};
+    let mostRecentFuncReturn;
 
     // Func used to print stuff
     function sendMessage(currentLine) {
@@ -193,8 +194,8 @@ function runEsoLang(code) {
             const currentLine = funcCode[j];
 
             if (currentLine.startsWith("return")) {
-                // diffrent logic
-                return;
+                mostRecentFuncReturn = currentLine.substring(6).trim();
+                return true;
             }
 
             runMiniCode(currentLine);
@@ -241,10 +242,14 @@ function runEsoLang(code) {
             }
         } else {
             if (currentLine.indexOf("(") !== -1) {
-                /*
-                console.error(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
-                    break mainLoop;
-                    */
+                switch (runFunc(currentLine)) {
+                    case [false, "unknown"]:
+                        console.error(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
+                        break mainLoop;
+                    case [false, "numArgs"]:
+                        console.error(`ERROR ON LINE ${i + 1} | Number of args does not match function declaration`);
+                        break mainLoop;
+                }
             } else {
                 console.error(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
                 break mainLoop;
