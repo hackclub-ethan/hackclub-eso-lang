@@ -28,7 +28,7 @@ function runEsoLang(code) {
             }
         } else if (currentLine.startsWith("propose")) {
             const varName = currentLine.substring(8, currentLine.indexOf("=")).trim();
-            const varVal = currentLine.substring(currentLine.indexOf("=") + 1).trim();
+            let varVal = currentLine.substring(currentLine.indexOf("=") + 1).trim();
 
             if (keyWords.includes(varName)) {
                 // Error for using reserved keywords for var names
@@ -40,6 +40,13 @@ function runEsoLang(code) {
             } else if (varVal.toLowerCase() == "false") {
                 varibles[varName] = false;
                 continue;
+            }
+    
+            try {
+                const temp = eval(`${varVal}`);
+                varVal = temp;
+            } catch (e) {
+                // Nothing
             }
 
             if (Number(varVal) !== NaN) {
