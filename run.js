@@ -112,8 +112,8 @@ function runEsoLang(code) {
         return true;
     }
 
-    // Runs code that is the code to be ran if code errors in propsal statment
-    function runCatchCode(catchCode) {
+    // Runs code that is the code to be ran if code errors in propsal statment AND for code within functions
+    function runMiniCode(catchCode) {
         if (code.startsWith("sendMessage(")) {
             switch (sendMessage(catchCode)) {
                 case [false, ")"]:
@@ -143,7 +143,7 @@ function runEsoLang(code) {
         if (code.startsWith("sendMessage(")) {
             switch(sendMessage(code)) {
                 case !true:
-                    const val = runCatchCode(catchCode);
+                    const val = runMiniCode(catchCode);
                     
                     if (!val) {
                         return val;
@@ -154,7 +154,7 @@ function runEsoLang(code) {
         } else if (code.startsWith("propose")) {
             switch(propose(code)) {
                 case !true:
-                    const val = runCatchCode(catchCode);
+                    const val = runMiniCode(catchCode);
                     
                     if (!val) {
                         return val;
@@ -165,6 +165,40 @@ function runEsoLang(code) {
         }
 
         return true;
+    }
+
+    // Running functions
+    function runFunc(currentLine) {
+        const funcName = currentLine.substring(0, currentLine.indexOf("(")).trim();
+
+        if (!Object.keys(functions).includes(funcName)) {
+            return [false, "unknown"];
+        }
+
+        const allArgs = currentLine.substring(currentLine.indexOf("(") + 1, currentLine.lastIndexOf(")"));
+        const args = allArgs.split(",");
+        const declaredArgs = functions[funcName][0];
+
+        if (args.length !== declaredArgs.length) {
+            return [false, "numArgs"];
+        }
+
+        for (let j = 0; j < args.length; j++) {
+            varibles[declaredArgs[j]] = args[j];
+        }
+
+        const funcCode = functions[funcName][1];
+
+        for (let j = 0; j < funcCode.length; j++) {
+            const currentLine = funcCode[j];
+
+            if (currentLine.startsWith("return")) {
+                // diffrent logic
+                return;
+            }
+
+            runMiniCode(currentLine);
+        }
     }
 
     // Loops through all lines of code to run it
@@ -204,6 +238,16 @@ function runEsoLang(code) {
                     break;
                 default:
                     break mainLoop;
+            }
+        } else {
+            if (currentLine.indexOf("(") !== -1) {
+                /*
+                console.error(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
+                    break mainLoop;
+                    */
+            } else {
+                console.error(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
+                break mainLoop;
             }
         }
     }
