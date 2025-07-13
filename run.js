@@ -1,6 +1,7 @@
 function runEsoLang(code) {
     const lines = code.split("\n");
 
+    const keyWords = ["sendMessage", "propose", "ysws", "proposal", "proposalRejected"];
     const varibles = {};
 
     for (let i = 0; i < lines.length; i++) {
@@ -28,6 +29,10 @@ function runEsoLang(code) {
         } else if (currentLine.startsWith("propose")) {
             const varName = currentLine.substring(8, currentLine.indexOf("=")).trim();
             const varVal = currentLine.substring(currentLine.indexOf("=") + 1).trim();
+
+            if (keyWords.includes(varName)) {
+                // Error for using reserved keywords for var names
+            }
             
             if (varVal.toLowerCase() == "true") {
                 varibles[varName] = true;
@@ -42,7 +47,12 @@ function runEsoLang(code) {
                 continue;
             }
 
-            varibles[varName] = varVal;
+            if (varVal.startsWith('"') && varVal.endsWith('"')) {
+                varibles[varName] = varVal;
+                continue;
+            }
+
+            varibles[varName] = varibles[varVal];
         }
     }
 }
