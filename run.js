@@ -112,22 +112,65 @@ function runEsoLang(code) {
         return true;
     }
 
-    // Error handeling
-    function proposal(currentLine) {
-        const code = currentLine.substring(10, currentLine.indexOf(","));
-        const catchCode = currentLine.substring(currentLine.indexOf(",") + 1, currentLine.length - 1);
-
-        try {
-            // run the code
-        } catch (e) {
-            // run the catchCode
+    // Runs code that is the code to be ran if code errors in propsal statment
+    function runCatchCode(catchCode) {
+        if (code.startsWith("sendMessage(")) {
+            switch (sendMessage(catchCode)) {
+                case [false, ")"]:
+                    console.error(`ERROR ON LINE ${i + 1} | No closing ")"`);
+                    break;
+                case [false, "something"]:
+                    console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
+                    break;
+            }
+        } else if (code.startsWith("propose")) {
+            switch (propose(catchCode)) {
+                case [false, "reserve"]:
+                    console.error(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
+                    break;
+                case [false, "something"]:
+                    console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
+                    break;
+            }
         }
     }
 
+    // Error handeling
+    function proposal(currentLine) {
+        const code = currentLine.substring(10, currentLine.indexOf(",")).trim();
+        const catchCode = currentLine.substring(currentLine.indexOf(",") + 1, currentLine.length - 1);
+
+        if (code.startsWith("sendMessage(")) {
+            switch(sendMessage(code)) {
+                case !true:
+                    const val = runCatchCode(catchCode);
+                    
+                    if (!val) {
+                        return val;
+                    }
+
+                    break;
+            }
+        } else if (code.startsWith("propose")) {
+            switch(propose(code)) {
+                case !true:
+                    const val = runCatchCode(catchCode);
+                    
+                    if (!val) {
+                        return val;
+                    }
+
+                    break;
+            }
+        }
+
+        return true;
+    }
+
+    // Loops through all lines of code to run it
     mainLoop: for (var i = 0; i < lines.length; i++) {
         const currentLine = lines[i].trim();
 
-        // print function
         if (currentLine.startsWith("sendMessage(")) {
             switch (sendMessage(currentLine)) {
                 case [false, ")"]:
@@ -157,7 +200,9 @@ function runEsoLang(code) {
             }
         } else if (currentLine.startsWith("proposal")) {
             switch (proposal(currentLine)) {
-                case false:
+                case true:
+                    break;
+                default:
                     break mainLoop;
             }
         }
