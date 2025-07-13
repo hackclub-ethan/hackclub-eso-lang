@@ -42,7 +42,7 @@ ysws nameHERE(args...) {
 It will be a try catch block
 
 ```text
-propose {
+proposal {
     CODE;
 } proposalRejected (e) {
     CODE;
