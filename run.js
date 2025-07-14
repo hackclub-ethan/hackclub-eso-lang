@@ -329,18 +329,22 @@ function runEsoLang(code) {
     }
 
     return output;
-}
+};
 
-const outputElm = document.getElementById("output")
+const outputElm = document.getElementById("output");
 
 function runProgram() {
     const code = document.getElementById("code").value;
 
     const output = runEsoLang(code);
 
-    for (let i = 0; i < output.length; i++) {
-        outputElm.innerHTML = outputElm.innerHTML + `${output[i]} <br />`
-    }
-}
+    outputElm.innerHTML = "";
 
-document.getElementById("run").addEventListener("click", runProgram)
+    for (let i = 0; i < output.length; i++) {
+        outputElm.innerHTML = outputElm.innerHTML + `${output[i]} <br />`;
+    };
+
+    outputElm.style.visibility = "visible"
+};
+
+document.getElementById("run").addEventListener("click", runProgram);
