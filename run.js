@@ -6,6 +6,7 @@ function runEsoLang(code) {
     const varibles = {};
     const functions = {};
     let mostRecentFuncReturn;
+    let mostRecentVar;
 
     // Func used to print stuff
     function sendMessage(currentLine) {
@@ -45,8 +46,15 @@ function runEsoLang(code) {
                 try {
                     const varName = currentLine.slice(12, currentLine.length - 1);
 
-                    console.log(varibles[varName]);
-                    output.push(varibles[varName]);
+                    if (varibles[varName] == undefined) {
+                        if (varName == Object.keys(mostRecentVar)[0]) {
+                                console.log(mostRecentVar[varName]);
+                                output.push(mostRecentVar[varName]);
+                        }
+                    } else {
+                        console.log(varibles[varName]);
+                        output.push(varibles[varName]);
+                    }
                 } catch (e) {
                     return [false, "something"];
                 }
@@ -114,13 +122,16 @@ function runEsoLang(code) {
                     }
                 }
 
+                Object.assign(varibles, { [varName]: eval(`${temp.join("")}`) })
                 varibles[varName] = eval(`${temp.join("")}`);
+                mostRecentVar = { [varName]: eval(`${temp.join("")}`) };
             }
 
             varibles[varName] = varibles[varVal];
         } catch (e) {
             return [false, "something"];
         }
+
         return true;
     }
 
@@ -331,6 +342,9 @@ function runEsoLang(code) {
     return output;
 };
 
+export { runEsoLang }
+
+/*
 const outputElm = document.getElementById("output");
 
 function runProgram() {
@@ -348,3 +362,4 @@ function runProgram() {
 };
 
 document.getElementById("run").addEventListener("click", runProgram);
+*/
