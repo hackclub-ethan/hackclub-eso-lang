@@ -13,7 +13,7 @@ function runEsoLang(code) {
         // Logic for if the message is a string (instead of var)
         if (isMessageStr) {
             try {
-                const message = currentLine.substring(14, currentLine.lastIndexOf('"'));
+                const message = currentLine.substring(13, currentLine.lastIndexOf('"'));
 
                 if (!currentLine.slice(-1) === ")") {
                     return [false, ")"];
@@ -24,25 +24,24 @@ function runEsoLang(code) {
                 return [false, "something"];
             }
         } else {
-            // This line checks for if there are atleast 2 `(`
-            if ((currentLine.match(/\(/g) || []).length >= 2) {
+            // This line checks for if there are atleast 4 `(`
+            if ((currentLine.match(/\(/g) || []).length >= 4) {
                 // Logic for if the message is from a function
                 try {
-                    const funcName = currentLine.slice(13, currentLine.length - 1);
+                    const funcName = currentLine.slice(12, currentLine.length - 1);
 
                     if (!Object.keys(functions).includes(funcName)) {
                         return [false, "unknown function"];
                     }
 
                     runFunc(currentLine);
-                    console.log(mostRecentFuncReturn);
                 } catch (e) {
                     return [false, "something"];
                 }
             } else {
                 // Logic for if the message is from a varible
                 try {
-                    const varName = currentLine.slice(13, currentLine.length - 1);
+                    const varName = currentLine.slice(12, currentLine.length - 1);
 
                     console.log(varibles[varName]);
                 } catch (e) {
@@ -62,6 +61,11 @@ function runEsoLang(code) {
             if (keyWords.includes(varName)) {
                 return [false, "reserve"];
             }
+
+            if (varVal.startsWith('"') && varVal.endsWith('"')) {
+                varibles[varName] = varVal.substring(1, varVal.length - 1);
+                return true;
+            }
             
             if (varVal.toLowerCase() == "true") {
                 varibles[varName] = true;
@@ -78,9 +82,8 @@ function runEsoLang(code) {
                 // Nothing
             }
 
-            if (Number(varVal) !== NaN) {
-                varibles[varName] = Number(varVal);
-                return true;
+            if (typeof varVal == "number") {
+                varibles[varName] = varVal;
             }
 
             if (varVal.includes("(")) {
@@ -93,9 +96,22 @@ function runEsoLang(code) {
                 varVal = mostRecentFuncReturn;
             }
 
-            if (varVal.startsWith('"') && varVal.endsWith('"')) {
-                varibles[varName] = varVal;
-                return true;
+            if (varVal.split(" ").length > 0) {
+                const temp = varVal.split(" ");
+
+                for (let i = 0; i < temp.length; i++) {
+                    if (Number(temp[i]) != NaN) {
+                        if (typeof varibles[temp[i]] == "number") {
+                            temp[i] = varibles[temp[i]];
+                        } else if (temp[i] != "+" || temp[i] != "-" || temp[i] != "*" || temp[i] != "/") {
+                            continue;
+                        } else {
+                            return [false, "math text"]
+                        }
+                    }
+                }
+
+                varibles[varName] = eval(`${temp.join("")}`);
             }
 
             varibles[varName] = varibles[varVal];
@@ -256,6 +272,9 @@ function runEsoLang(code) {
                 case [false, "unknown function"]:
                     console.error(`ERROR ON LINE ${i + 1} | Function with that name not found`);
                     break mainLoop;
+                case [false, "math text"]:
+                    console.error(`ERROR ON LINE ${i + 1} | You tried to do math with a string`);
+                    break mainLoop;
             }
         } else if (currentLine.startsWith("ysws")) {
             switch (ysws(currentLine, i)) {
@@ -290,3 +309,5 @@ function runEsoLang(code) {
         }
     }
 }
+
+export { runEsoLang };
