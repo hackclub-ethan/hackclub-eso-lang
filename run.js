@@ -2,6 +2,7 @@ function runEsoLang(code) {
     const lines = code.split("\n");
 
     const keyWords = ["sendMessage", "propose", "ysws", "proposal", "true", "false"];
+    const output = [];
     const varibles = {};
     const functions = {};
     let mostRecentFuncReturn;
@@ -19,7 +20,8 @@ function runEsoLang(code) {
                     return [false, ")"];
                 }
 
-                console.log(message)
+                console.log(message);
+                output.push(message);
             } catch (e) {
                 return [false, "something"];
             }
@@ -44,6 +46,7 @@ function runEsoLang(code) {
                     const varName = currentLine.slice(12, currentLine.length - 1);
 
                     console.log(varibles[varName]);
+                    output.push(varibles[varName]);
                 } catch (e) {
                     return [false, "something"];
                 }
@@ -162,18 +165,22 @@ function runEsoLang(code) {
             switch (sendMessage(catchCode)) {
                 case [false, ")"]:
                     console.error(`ERROR ON LINE ${i + 1} | No closing ")"`);
+                    output.push(`ERROR ON LINE ${i + 1} | No closing ")"`);
                     break;
                 case [false, "something"]:
                     console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
+                    output.push(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     break;
             }
         } else if (code.startsWith("propose")) {
             switch (propose(catchCode)) {
                 case [false, "reserve"]:
                     console.error(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
+                    output.push(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
                     break;
                 case [false, "something"]:
                     console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
+                    output.push(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     break;
             }
         }
@@ -253,36 +260,45 @@ function runEsoLang(code) {
             switch (sendMessage(currentLine)) {
                 case [false, ")"]:
                     console.error(`ERROR ON LINE ${i + 1} | No closing ")"`);
+                    output.push(`ERROR ON LINE ${i + 1} | No closing ")"`);
                     break mainLoop;
                 case [false, "something"]:
                     console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
+                    output.push(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     break mainLoop;
                 case [false, "unknown function"]:
                     console.error(`ERROR ON LINE ${i + 1} | Function with that name not found`);
+                    output.push(`ERROR ON LINE ${i + 1} | Function with that name not found`);
                     break mainLoop;
             }
         } else if (currentLine.startsWith("propose")) {
             switch (propose(currentLine)) {
                 case [false, "reserve"]:
                     console.error(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
+                    output.push(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
                     break mainLoop;
                 case [false, "something"]:
                     console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
+                    output.push(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     break mainLoop;
                 case [false, "unknown function"]:
                     console.error(`ERROR ON LINE ${i + 1} | Function with that name not found`);
+                    output.push(`ERROR ON LINE ${i + 1} | Function with that name not found`);
                     break mainLoop;
                 case [false, "math text"]:
                     console.error(`ERROR ON LINE ${i + 1} | You tried to do math with a string`);
+                    output.push(`ERROR ON LINE ${i + 1} | You tried to do math with a string`);
                     break mainLoop;
             }
         } else if (currentLine.startsWith("ysws")) {
             switch (ysws(currentLine, i)) {
                 case [false, "reserve"]:
                     console.error(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
+                    output.push(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
                     break mainLoop;
                 case [false, "something"]:
                     console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
+                    output.push(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     break mainLoop;
             }
         } else if (currentLine.startsWith("proposal")) {
@@ -297,17 +313,34 @@ function runEsoLang(code) {
                 switch (runFunc(currentLine)) {
                     case [false, "unknown"]:
                         console.error(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
+                        output.push(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
                         break mainLoop;
                     case [false, "numArgs"]:
                         console.error(`ERROR ON LINE ${i + 1} | Number of args does not match function declaration`);
+                        output.push(`ERROR ON LINE ${i + 1} | Number of args does not match function declaration`);
                         break mainLoop;
                 }
             } else {
                 console.error(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
+                output.push(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
                 break mainLoop;
             }
         }
     }
+
+    return output;
 }
 
-export { runEsoLang };
+const outputElm = document.getElementById("output")
+
+function runProgram() {
+    const code = document.getElementById("code").value;
+
+    const output = runEsoLang(code);
+
+    for (let i = 0; i < output.length; i++) {
+        outputElm.innerHTML = outputElm.innerHTML + `${output[i]} <br />`
+    }
+}
+
+document.getElementById("run").addEventListener("click", runProgram)
