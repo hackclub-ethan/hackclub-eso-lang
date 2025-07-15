@@ -179,30 +179,31 @@ function runEsoLang(code) {
 
     // Runs code that is the code to be ran if code errors in propsal statment AND for code within functions
     function runMiniCode(catchCode) {
-        if (code.startsWith("sendMessage(")) {
-            console.log(185)
+        if (catchCode.trim().startsWith("sendMessage(")) {
             switch (sendMessage(catchCode)) {
                 case [false, ")"]:
                     console.error(`ERROR ON LINE ${i + 1} | No closing ")"`);
                     output.push(`ERROR ON LINE ${i + 1} | No closing ")"`);
-                    break;
+                    return false;
                 case [false, "something"]:
                     console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     output.push(`ERROR ON LINE ${i + 1} | Something went wrong`);
-                    break;
+                    return false;
             }
-        } else if (code.startsWith("propose")) {
+        } else if (catchCode.startsWith("propose")) {
             switch (propose(catchCode)) {
                 case [false, "reserve"]:
                     console.error(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
                     output.push(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
-                    break;
+                    return false;
                 case [false, "something"]:
                     console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     output.push(`ERROR ON LINE ${i + 1} | Something went wrong`);
-                    break;
+                    return false;
             }
         }
+
+        return true;
     }
 
     // Error handeling
@@ -219,12 +220,9 @@ function runEsoLang(code) {
                 }
             }
         } else if (code.startsWith("propose")) {
-            console.log("This")
-            if (propose(code)) {
-                console.log(catchCode)
+            const thing = propose(code);
+            if (typeof thing == 'object' && thing[0] == false) {
                 const val = runMiniCode(catchCode);
-
-                console.log(val)
                 
                 if (!val) {
                     return val;
@@ -354,6 +352,7 @@ function runEsoLang(code) {
 };
 
 export { runEsoLang }
+
 
 const outputElm = document.getElementById("output");
 
