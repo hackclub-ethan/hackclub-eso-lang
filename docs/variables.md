@@ -23,3 +23,14 @@ propose num2 = num1 * 2
 sendMessage(num2)
 ```
 That would output 10.
+
+If you want to reassign the value to a varible you would use the same syntax as declaration. Ex:
+
+```text
+propose num1 = 5
+propose num2 = num1 * 2
+propose num1 = num2
+sendMessage(num1)
+```
+
+That code block would output `10`.
