@@ -12,6 +12,8 @@ function runEsoLang(code) {
     function sendMessage(currentLine) {
         const isMessageStr = currentLine.indexOf('"') === -1 ? false : true;
 
+        console.log(15)
+
         // Logic for if the message is a string (instead of var)
         if (isMessageStr) {
             try {
@@ -28,16 +30,19 @@ function runEsoLang(code) {
             }
         } else {
             // This line checks for if there are atleast 4 `(`
-            if ((currentLine.match(/\(/g) || []).length >= 4) {
+            if ((currentLine.match(/\(/g) || []).length >= 2) {
                 // Logic for if the message is from a function
                 try {
-                    const funcName = currentLine.slice(12, currentLine.length - 1);
+                    const funcName = currentLine.slice(12, currentLine.lastIndexOf("("));
 
                     if (!Object.keys(functions).includes(funcName)) {
                         return [false, "unknown function"];
                     }
 
                     runFunc(currentLine);
+
+                    console.log(mostRecentFuncReturn);
+                    output.push(mostRecentFuncReturn);
                 } catch (e) {
                     return [false, "something"];
                 }
@@ -96,7 +101,7 @@ function runEsoLang(code) {
             if (typeof varVal == "number") {
                 varibles[varName] = varVal;
             }
-
+            
             if (varVal.includes("(")) {
                 switch (runFunc(currentLine)) {
                     case [false, "unknown"]:
@@ -104,7 +109,10 @@ function runEsoLang(code) {
                     case [false, "numArgs"]:
                         return [false, "numArgs"];
                 }
+
                 varVal = mostRecentFuncReturn;
+                varibles[varName] = varVal;
+                mostRecentVar = { [varName] : varVal };
             }
 
             if (varVal.split(" ").length > 0) {
@@ -146,8 +154,8 @@ function runEsoLang(code) {
 
             const args = currentLine.substring(currentLine.indexOf("(") + 1, currentLine.indexOf(")")).trim().split(",");
             
-            for (let i = 0; i < args.length; i++) {
-                args[i] = i.trim();
+            for (let j = 0; j < args.length; j++) {
+                args[j] = args[j].trim();
             }
 
             const code = [];
@@ -156,7 +164,7 @@ function runEsoLang(code) {
                 const codeLine = lines[i + j].trim();
 
                 if (codeLine.endsWith("}")) {
-                    i = i + j;
+                    i = j + i;
                     break;
                 }
 
@@ -165,14 +173,16 @@ function runEsoLang(code) {
 
             functions[funcName] = [args, code];
         } catch (e) {
+            console.log(e)
             return [false, "something"];
         }
-        return true;
+        return [true, i];
     }
 
     // Runs code that is the code to be ran if code errors in propsal statment AND for code within functions
     function runMiniCode(catchCode) {
         if (code.startsWith("sendMessage(")) {
+            console.log(185)
             switch (sendMessage(catchCode)) {
                 case [false, ")"]:
                     console.error(`ERROR ON LINE ${i + 1} | No closing ")"`);
@@ -199,30 +209,28 @@ function runEsoLang(code) {
 
     // Error handeling
     function proposal(currentLine) {
-        const code = currentLine.substring(10, currentLine.indexOf(",")).trim();
-        const catchCode = currentLine.substring(currentLine.indexOf(",") + 1, currentLine.length - 1);
+        const code = currentLine.substring(9, currentLine.indexOf(",")).trim();
+        const catchCode = currentLine.substring(currentLine.indexOf(",") + 1, currentLine.length - 1).trim();
 
         if (code.startsWith("sendMessage(")) {
-            switch(sendMessage(code)) {
-                case !true:
-                    const val = runMiniCode(catchCode);
-                    
-                    if (!val) {
-                        return val;
-                    }
-
-                    break;
+            if (!sendMessage(code)) {
+                const val = runMiniCode(catchCode);
+                
+                if (!val) {
+                    return val;
+                }
             }
         } else if (code.startsWith("propose")) {
-            switch(propose(code)) {
-                case !true:
-                    const val = runMiniCode(catchCode);
-                    
-                    if (!val) {
-                        return val;
-                    }
+            console.log("This")
+            if (propose(code)) {
+                console.log(catchCode)
+                const val = runMiniCode(catchCode);
 
-                    break;
+                console.log(val)
+                
+                if (!val) {
+                    return val;
+                }
             }
         }
 
@@ -302,7 +310,9 @@ function runEsoLang(code) {
                     break mainLoop;
             }
         } else if (currentLine.startsWith("ysws")) {
-            switch (ysws(currentLine, i)) {
+            const returnVal = ysws(currentLine, i);
+
+            switch (returnVal) {
                 case [false, "reserve"]:
                     console.error(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
                     output.push(`ERROR ON LINE ${i + 1} | Can not used reserved key word for varible name`);
@@ -311,6 +321,9 @@ function runEsoLang(code) {
                     console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     output.push(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     break mainLoop;
+                default:
+                    i = returnVal[1];
+                    break;
             }
         } else if (currentLine.startsWith("proposal")) {
             switch (proposal(currentLine)) {
