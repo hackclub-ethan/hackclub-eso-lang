@@ -12,8 +12,6 @@ function runEsoLang(code) {
     function sendMessage(currentLine) {
         const isMessageStr = currentLine.indexOf('"') === -1 ? false : true;
 
-        console.log(15)
-
         // Logic for if the message is a string (instead of var)
         if (isMessageStr) {
             try {
@@ -357,7 +355,6 @@ function runEsoLang(code) {
 
 export { runEsoLang }
 
-/*
 const outputElm = document.getElementById("output");
 
 function runProgram() {
@@ -375,4 +372,3 @@ function runProgram() {
 };
 
 document.getElementById("run").addEventListener("click", runProgram);
-*/
