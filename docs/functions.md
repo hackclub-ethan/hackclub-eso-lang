@@ -19,7 +19,7 @@ This is a function to add 2 values together:
 ```text
 ysws add(num1, num2) {
     propose sum = num1 + num2
-    return sum
+    grant sum
 }
 
 sendMessage(add(1 ,2))

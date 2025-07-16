@@ -261,7 +261,7 @@ function runEsoLang(code) {
         for (let j = 0; j < funcCode.length; j++) {
             const currentLine = funcCode[j];
 
-            if (currentLine.startsWith("return")) {
+            if (currentLine.startsWith("grant")) {
                 mostRecentFuncReturn = currentLine.substring(6).trim();
 
                 try {

@@ -2,7 +2,7 @@ import { runEsoLang } from "./run.js";
 
 const code = `ysws add(num1, num2) {
     propose sum = num1 + num2
-    return sum
+    grant sum
 }
 sendMessage(add(5, 2))`;
 
