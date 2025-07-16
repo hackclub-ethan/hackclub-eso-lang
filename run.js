@@ -27,7 +27,7 @@ function runEsoLang(code) {
                 return [false, "something"];
             }
         } else {
-            // This line checks for if there are atleast 4 `(`
+            // This line checks for if there are atleast 2 `(`
             if ((currentLine.match(/\(/g) || []).length >= 2) {
                 // Logic for if the message is from a function
                 try {
@@ -47,12 +47,12 @@ function runEsoLang(code) {
             } else {
                 // Logic for if the message is from a varible
                 try {
-                    const varName = currentLine.slice(12, currentLine.length - 1);
-
+                    const varName = currentLine.slice(12, currentLine.length - 1).trim();
+                    
                     if (varibles[varName] == undefined) {
                         if (varName == Object.keys(mostRecentVar)[0]) {
-                                console.log(mostRecentVar[varName]);
-                                output.push(mostRecentVar[varName]);
+                            console.log(mostRecentVar[varName]);
+                            output.push(mostRecentVar[varName]);
                         }
                     } else {
                         console.log(varibles[varName]);
@@ -71,7 +71,7 @@ function runEsoLang(code) {
         try {
             const varName = currentLine.substring(8, currentLine.indexOf("=")).trim();
             let varVal = currentLine.substring(currentLine.indexOf("=") + 1).trim();
-
+            
             if (keyWords.includes(varName)) {
                 return [false, "reserve"];
             }
@@ -116,15 +116,14 @@ function runEsoLang(code) {
             if (varVal.split(" ").length > 0) {
                 const temp = varVal.split(" ");
 
+
                 for (let i = 0; i < temp.length; i++) {
-                    if (Number(temp[i]) != NaN) {
-                        if (typeof varibles[temp[i]] == "number") {
-                            temp[i] = varibles[temp[i]];
-                        } else if (temp[i] != "+" || temp[i] != "-" || temp[i] != "*" || temp[i] != "/") {
-                            continue;
-                        } else {
-                            return [false, "math text"]
-                        }
+                    if (temp[i] == "+" || temp[i] == "-" || temp[i] == "*" || temp[i] == "/") {
+                        continue;
+                    } else if (Number(varibles[temp[i]]) !== NaN) {
+                        temp[i] = varibles[temp[i]];
+                    } else {
+                        return [false, "math text"]
                     }
                 }
 
@@ -171,7 +170,6 @@ function runEsoLang(code) {
 
             functions[funcName] = [args, code];
         } catch (e) {
-            console.log(e)
             return [false, "something"];
         }
         return [true, i];
@@ -235,13 +233,18 @@ function runEsoLang(code) {
 
     // Running functions
     function runFunc(currentLine) {
-        const funcName = currentLine.substring(0, currentLine.indexOf("(")).trim();
+        let funcName = currentLine.substring(currentLine.lastIndexOf(" ", currentLine.indexOf("(")), currentLine.indexOf("(")).trim();
+        let allArgs = currentLine.substring(currentLine.indexOf("(") + 1, currentLine.lastIndexOf(")"));
+        
+        if (funcName == "sendMessage") {
+            funcName = currentLine.substring(currentLine.indexOf("sendMessage") + "sendMessage".length + 1, currentLine.lastIndexOf("(")).trim();
+            allArgs = allArgs.substring(funcName.length + 1, allArgs.length - 1);
+        }
 
         if (!Object.keys(functions).includes(funcName)) {
             return [false, "unknown"];
         }
 
-        const allArgs = currentLine.substring(currentLine.indexOf("(") + 1, currentLine.lastIndexOf(")"));
         const args = allArgs.split(",");
         const declaredArgs = functions[funcName][0];
 
@@ -260,6 +263,17 @@ function runEsoLang(code) {
 
             if (currentLine.startsWith("return")) {
                 mostRecentFuncReturn = currentLine.substring(6).trim();
+
+                try {
+                    if (varibles[mostRecentFuncReturn] != undefined) {
+                        mostRecentFuncReturn = varibles[varName];
+                    } else if (mostRecentVar[mostRecentFuncReturn] != undefined) {
+                        mostRecentFuncReturn = mostRecentVar[mostRecentFuncReturn];
+                    }
+                } catch (e) {
+                    return [false, "something"];
+                }
+
                 return true;
             }
 
@@ -352,7 +366,6 @@ function runEsoLang(code) {
 };
 
 export { runEsoLang }
-
 
 const outputElm = document.getElementById("output");
 
