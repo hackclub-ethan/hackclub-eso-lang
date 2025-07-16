@@ -365,8 +365,6 @@ function runEsoLang(code) {
     return output;
 };
 
-export { runEsoLang }
-
 const outputElm = document.getElementById("output");
 
 function runProgram() {
@@ -377,10 +375,13 @@ function runProgram() {
     outputElm.innerHTML = "";
 
     for (let i = 0; i < output.length; i++) {
-        outputElm.innerHTML = outputElm.innerHTML + `${output[i]} <br />`;
+        outputElm.innerHTML = outputElm.innerHTML + `${output[i]}
+`;
     };
 
     outputElm.style.visibility = "visible"
 };
 
 document.getElementById("run").addEventListener("click", runProgram);
+
+//outputElm.innerHTML() = "";

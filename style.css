@@ -1,5 +1,8 @@
 * {
     text-align: center;
+
+    background-color: darkgray;
+    color: white;
 }
 
 h1 {
@@ -10,9 +13,10 @@ textarea {
     text-align: left;
 }
 
-code {
-    visibility: hidden;
-    
+code {    
     background-color: gray;
     padding: .2%;
+    border: none;
+    
+    background: none;
 }
