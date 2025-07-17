@@ -1,4 +1,4 @@
-import { runEsoLang } from "./run.js";
+import { runEsoLang } from "../run.js";
 
 const program = `sendMessage("Hello, World!")`;
 

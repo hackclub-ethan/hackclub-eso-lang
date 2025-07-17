@@ -1,4 +1,4 @@
-function runEsoLang(code) {
+export function runEsoLang(code) {
     const lines = code.split("\n");
 
     const keyWords = ["sendMessage", "propose", "ysws", "proposal", "true", "false"];
@@ -365,6 +365,7 @@ function runEsoLang(code) {
     return output;
 };
 
+/*
 const outputElm = document.getElementById("output");
 
 function runProgram() {
@@ -383,5 +384,4 @@ function runProgram() {
 };
 
 document.getElementById("run").addEventListener("click", runProgram);
-
-//outputElm.innerHTML() = "";
+*/
