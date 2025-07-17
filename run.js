@@ -1,4 +1,4 @@
-export function runEsoLang(code) {
+function runEsoLang(code) {
     const lines = code.split("\n");
 
     const keyWords = ["sendMessage", "propose", "ysws", "proposal", "true", "false"];
