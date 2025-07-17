@@ -25,7 +25,7 @@ export function runEsoLang(code) {
                 output.push(message);
             } catch (e) {
                 return [false, "something"];
-            }
+            };
         } else {
             // This line checks for if there are atleast 2 `(`
             if ((currentLine.match(/\(/g) || []).length >= 2) {
@@ -35,7 +35,7 @@ export function runEsoLang(code) {
 
                     if (!Object.keys(functions).includes(funcName)) {
                         return [false, "unknown function"];
-                    }
+                    };
 
                     runFunc(currentLine);
 
@@ -43,7 +43,7 @@ export function runEsoLang(code) {
                     output.push(mostRecentFuncReturn);
                 } catch (e) {
                     return [false, "something"];
-                }
+                };
             } else {
                 // Logic for if the message is from a varible
                 try {
@@ -53,18 +53,18 @@ export function runEsoLang(code) {
                         if (varName == Object.keys(mostRecentVar)[0]) {
                             console.log(mostRecentVar[varName]);
                             output.push(mostRecentVar[varName]);
-                        }
+                        };
                     } else {
                         console.log(varibles[varName]);
                         output.push(varibles[varName]);
-                    }
+                    };
                 } catch (e) {
                     return [false, "something"];
-                }
-            }
-        }
+                };
+            };
+        };
         return true;
-    }
+    };
 
     // Func used to declare varibles
     function propose(currentLine) {
@@ -74,12 +74,12 @@ export function runEsoLang(code) {
             
             if (keyWords.includes(varName)) {
                 return [false, "reserve"];
-            }
+            };
 
             if (varVal.startsWith('"') && varVal.endsWith('"')) {
                 varibles[varName] = varVal.substring(1, varVal.length - 1);
                 return true;
-            }
+            };
             
             if (varVal.toLowerCase() == "true") {
                 varibles[varName] = true;
@@ -87,18 +87,18 @@ export function runEsoLang(code) {
             } else if (varVal.toLowerCase() == "false") {
                 varibles[varName] = false;
                 return true;
-            }
+            };
     
             try {
                 const temp = eval(`${varVal}`);
                 varVal = temp;
             } catch (e) {
                 // Nothing
-            }
+            };
 
             if (typeof varVal == "number") {
                 varibles[varName] = varVal;
-            }
+            };
             
             if (varVal.includes("(")) {
                 switch (runFunc(currentLine)) {
@@ -106,16 +106,15 @@ export function runEsoLang(code) {
                         return [false, "unknown"];
                     case [false, "numArgs"]:
                         return [false, "numArgs"];
-                }
+                };
 
                 varVal = mostRecentFuncReturn;
                 varibles[varName] = varVal;
                 mostRecentVar = { [varName] : varVal };
-            }
+            };
 
             if (varVal.split(" ").length > 0) {
                 const temp = varVal.split(" ");
-
 
                 for (let i = 0; i < temp.length; i++) {
                     if (temp[i] == "+" || temp[i] == "-" || temp[i] == "*" || temp[i] == "/") {
@@ -123,22 +122,22 @@ export function runEsoLang(code) {
                     } else if (Number(varibles[temp[i]]) !== NaN) {
                         temp[i] = varibles[temp[i]];
                     } else {
-                        return [false, "math text"]
-                    }
-                }
+                        return [false, "math text"];
+                    };
+                };
 
-                Object.assign(varibles, { [varName]: eval(`${temp.join("")}`) })
+                Object.assign(varibles, { [varName]: eval(`${temp.join("")}`) });
                 varibles[varName] = eval(`${temp.join("")}`);
                 mostRecentVar = { [varName]: eval(`${temp.join("")}`) };
-            }
+            };
 
             varibles[varName] = varibles[varVal];
         } catch (e) {
             return [false, "something"];
-        }
+        };
 
         return true;
-    }
+    };
 
     // Function declaration
     function ysws(currentLine, i) {
@@ -147,13 +146,13 @@ export function runEsoLang(code) {
 
             if (keyWords.includes(funcName)) {
                 return [false, "reserve"];
-            }
+            };
 
             const args = currentLine.substring(currentLine.indexOf("(") + 1, currentLine.indexOf(")")).trim().split(",");
             
             for (let j = 0; j < args.length; j++) {
                 args[j] = args[j].trim();
-            }
+            };
 
             const code = [];
 
@@ -163,15 +162,16 @@ export function runEsoLang(code) {
                 if (codeLine.endsWith("}")) {
                     i = j + i;
                     break;
-                }
+                };
 
                 code.push(codeLine);
-            }
+            };
 
             functions[funcName] = [args, code];
         } catch (e) {
             return [false, "something"];
-        }
+        };
+
         return [true, i];
     }
 
@@ -187,7 +187,7 @@ export function runEsoLang(code) {
                     console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     output.push(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     return false;
-            }
+            };
         } else if (catchCode.startsWith("propose")) {
             switch (propose(catchCode)) {
                 case [false, "reserve"]:
@@ -198,8 +198,8 @@ export function runEsoLang(code) {
                     console.error(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     output.push(`ERROR ON LINE ${i + 1} | Something went wrong`);
                     return false;
-            }
-        }
+            };
+        };
 
         return true;
     }
@@ -215,8 +215,8 @@ export function runEsoLang(code) {
                 
                 if (!val) {
                     return val;
-                }
-            }
+                };
+            };
         } else if (code.startsWith("propose")) {
             const thing = propose(code);
             if (typeof thing == 'object' && thing[0] == false) {
@@ -224,12 +224,12 @@ export function runEsoLang(code) {
                 
                 if (!val) {
                     return val;
-                }
-            }
-        }
+                };
+            };
+        };
 
         return true;
-    }
+    };
 
     // Running functions
     function runFunc(currentLine) {
@@ -239,22 +239,22 @@ export function runEsoLang(code) {
         if (funcName == "sendMessage") {
             funcName = currentLine.substring(currentLine.indexOf("sendMessage") + "sendMessage".length + 1, currentLine.lastIndexOf("(")).trim();
             allArgs = allArgs.substring(funcName.length + 1, allArgs.length - 1);
-        }
+        };
 
         if (!Object.keys(functions).includes(funcName)) {
             return [false, "unknown"];
-        }
+        };
 
         const args = allArgs.split(",");
         const declaredArgs = functions[funcName][0];
 
         if (args.length !== declaredArgs.length) {
             return [false, "numArgs"];
-        }
+        };
 
         for (let j = 0; j < args.length; j++) {
             varibles[declaredArgs[j]] = args[j];
-        }
+        };
 
         const funcCode = functions[funcName][1];
 
@@ -272,14 +272,14 @@ export function runEsoLang(code) {
                     }
                 } catch (e) {
                     return [false, "something"];
-                }
+                };
 
                 return true;
-            }
+            };
 
             runMiniCode(currentLine);
-        }
-    }
+        };
+    };
 
     // Loops through all lines of code to run it
     mainLoop: for (var i = 0; i < lines.length; i++) {
@@ -299,7 +299,7 @@ export function runEsoLang(code) {
                     console.error(`ERROR ON LINE ${i + 1} | Function with that name not found`);
                     output.push(`ERROR ON LINE ${i + 1} | Function with that name not found`);
                     break mainLoop;
-            }
+            };
         } else if (currentLine.startsWith("propose")) {
             switch (propose(currentLine)) {
                 case [false, "reserve"]:
@@ -318,7 +318,7 @@ export function runEsoLang(code) {
                     console.error(`ERROR ON LINE ${i + 1} | You tried to do math with a string`);
                     output.push(`ERROR ON LINE ${i + 1} | You tried to do math with a string`);
                     break mainLoop;
-            }
+            };
         } else if (currentLine.startsWith("ysws")) {
             const returnVal = ysws(currentLine, i);
 
@@ -334,14 +334,14 @@ export function runEsoLang(code) {
                 default:
                     i = returnVal[1];
                     break;
-            }
+            };
         } else if (currentLine.startsWith("proposal")) {
             switch (proposal(currentLine)) {
                 case true:
                     break;
                 default:
                     break mainLoop;
-            }
+            };
         } else {
             if (currentLine.indexOf("(") !== -1) {
                 switch (runFunc(currentLine)) {
@@ -353,19 +353,18 @@ export function runEsoLang(code) {
                         console.error(`ERROR ON LINE ${i + 1} | Number of args does not match function declaration`);
                         output.push(`ERROR ON LINE ${i + 1} | Number of args does not match function declaration`);
                         break mainLoop;
-                }
+                };
             } else {
                 console.error(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
                 output.push(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
                 break mainLoop;
-            }
-        }
-    }
+            };
+        };
+    };
 
     return output;
 };
 
-/*
 const outputElm = document.getElementById("output");
 
 function runProgram() {
@@ -380,8 +379,7 @@ function runProgram() {
 `;
     };
 
-    outputElm.style.visibility = "visible"
+    outputElm.style.visibility = "visible";
 };
 
 document.getElementById("run").addEventListener("click", runProgram);
-*/
