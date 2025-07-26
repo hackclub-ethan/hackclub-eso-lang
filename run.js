@@ -50,7 +50,9 @@ function runEsoLang(code) {
                     const varName = currentLine.slice(12, currentLine.length - 1).trim();
                     
                     if (varibles[varName] == undefined) {
+                        // console.log(Object.keys(mostRecentVar))
                         if (varName == Object.keys(mostRecentVar)[0]) {
+                            console.log(54)
                             console.log(mostRecentVar[varName]);
                             output.push(mostRecentVar[varName]);
                         };
@@ -78,14 +80,17 @@ function runEsoLang(code) {
 
             if (varVal.startsWith('"') && varVal.endsWith('"')) {
                 varibles[varName] = varVal.substring(1, varVal.length - 1);
+                mostRecentVar = { [varName]: varVal.substring(1, varVal.length - 1) }
                 return true;
             };
             
             if (varVal.toLowerCase() == "true") {
                 varibles[varName] = true;
+                mostRecentVar = { [varName]: true};
                 return true;
             } else if (varVal.toLowerCase() == "false") {
                 varibles[varName] = false;
+                mostRecentVar = { [varName]: false };
                 return true;
             };
     
@@ -98,6 +103,8 @@ function runEsoLang(code) {
 
             if (typeof varVal == "number") {
                 varibles[varName] = varVal;
+                mostRecentVar = { [varName]: varVal };
+                return true;
             };
             
             if (varVal.includes("(")) {
@@ -109,7 +116,7 @@ function runEsoLang(code) {
                 };
 
                 varVal = mostRecentFuncReturn;
-                varibles[varName] = varVal;
+                varibles[varName] = varVal ;
                 mostRecentVar = { [varName] : varVal };
             };
 
@@ -117,7 +124,9 @@ function runEsoLang(code) {
                 const temp = varVal.split(" ");
 
                 for (let i = 0; i < temp.length; i++) {
-                    if (temp[i] == "+" || temp[i] == "-" || temp[i] == "*" || temp[i] == "/") {
+                    if (temp[i] === 0 || temp[i] < 0 || temp[i] > 0) {
+                        continue;
+                    } else if (temp[i] == "+" || temp[i] == "-" || temp[i] == "*" || temp[i] == "/") {
                         continue;
                     } else if (Number(varibles[temp[i]]) !== NaN) {
                         temp[i] = varibles[temp[i]];
@@ -318,6 +327,8 @@ function runEsoLang(code) {
                     console.error(`ERROR ON LINE ${i + 1} | You tried to do math with a string`);
                     output.push(`ERROR ON LINE ${i + 1} | You tried to do math with a string`);
                     break mainLoop;
+                default:
+                    continue;
             };
         } else if (currentLine.startsWith("ysws")) {
             const returnVal = ysws(currentLine, i);
