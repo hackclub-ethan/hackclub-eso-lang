@@ -52,7 +52,6 @@ function runEsoLang(code) {
                     if (varibles[varName] == undefined) {
                         // console.log(Object.keys(mostRecentVar))
                         if (varName == Object.keys(mostRecentVar)[0]) {
-                            console.log(54)
                             console.log(mostRecentVar[varName]);
                             output.push(mostRecentVar[varName]);
                         };
@@ -138,6 +137,7 @@ function runEsoLang(code) {
                 Object.assign(varibles, { [varName]: eval(`${temp.join("")}`) });
                 varibles[varName] = eval(`${temp.join("")}`);
                 mostRecentVar = { [varName]: eval(`${temp.join("")}`) };
+                return true;
             };
 
             varibles[varName] = varibles[varVal];
