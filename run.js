@@ -275,7 +275,7 @@ function runEsoLang(code) {
 
                 try {
                     if (varibles[mostRecentFuncReturn] != undefined) {
-                        mostRecentFuncReturn = varibles[varName];
+                        mostRecentFuncReturn = varibles[mostRecentFuncReturn];
                     } else if (mostRecentVar[mostRecentFuncReturn] != undefined) {
                         mostRecentFuncReturn = mostRecentVar[mostRecentFuncReturn];
                     }
@@ -365,6 +365,8 @@ function runEsoLang(code) {
                         output.push(`ERROR ON LINE ${i + 1} | Number of args does not match function declaration`);
                         break mainLoop;
                 };
+            } else if (currentLine.trim() === "") {
+                continue;
             } else {
                 console.error(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
                 output.push(`ERROR ON LINE ${i + 1} | UNRECONIZED SYMBOL`);
